@@ -33,4 +33,8 @@ package DiceLibrary {
     part def Battery {
         port supply : SupplyPort;
     }
+    part def ThreeAaaAlkalinePack :> Battery {
+        doc /* Three replaceable 1.5 V AAA alkaline cells wired in series. */
+        attribute nominalVoltage : ISQ::ElectricPotentialValue = 4.5 [SI::V];
+    }
 }

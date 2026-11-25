@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="670" viewBox="0 0 1100 670" role="img" aria-labelledby="title desc">
+  <title id="title">Electronic die circuit</title>
+  <desc id="desc">Three AAA cells and a power switch supply an ATtiny1616. A pull-up and a normally open switch form the active-low button input. Seven GPIO pins each drive a red LED through a 680 ohm resistor.</desc>
+  <defs>
+    <style>
+      text { font: 15px Arial, sans-serif; fill: #152538; }
+      .small { font-size: 13px; }
+      .heading { font-size: 25px; font-weight: 700; }
+      .label { font-weight: 700; }
+      .wire { fill: none; stroke: #234057; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+      .component { fill: white; stroke: #234057; stroke-width: 2; }
+      .dot { fill: #234057; }
+    </style>
+    <g id="gnd" class="wire"><path d="M0 0v6m-10 0h20m-7 4h14m-9 4h4"/></g>
+    <g id="vdd" class="wire"><path d="M0 0v-7m-7 0h14"/><text x="0" y="-14" text-anchor="middle" stroke="none" class="small">VDD</text></g>
+    <g id="resistor"><rect class="component" x="0" y="-6" width="44" height="12"/></g>
+    <g id="led" class="wire"><path d="M0 -9L16 0 0 9zM16 -9v18M5 -14l8-8m-4 0h4v4m0 6l8-8m-4 0h4v4"/></g>
+    <g id="open-switch" class="wire"><circle cx="0" cy="0" r="3"/><circle cx="39" cy="0" r="3"/><path d="M3 -2l26-13"/></g>
+  </defs>
+  <rect width="1100" height="670" fill="white"/>
+  <text x="34" y="41" class="heading">Electronic die circuit</text>
+  <text x="34" y="65">Battery, roll button, ATtiny1616 and seven red LED pips</text>
+
+  <text x="40" y="113" class="label">Power</text>
+  <path class="wire" d="M65 210v-58h61m39 0h165M65 238v20h240v-43m-90 43v-43"/>
+  <path class="wire" d="M54 210h22m-17 7h12m-6 0v5m-11 0h22m-17 7h12m-6 0v4m-11 0h22m-17 5h12"/>
+  <use href="#open-switch" x="126" y="152"/>
+  <text x="117" y="183" class="small">SW1</text>
+  <text x="82" y="221">BT1</text><text x="81" y="238" class="small">3 × AAA</text>
+  <path class="wire" d="M215 152v53m-12 0h24m-24 10h24m78-63v53m-12 0h24m-24 10h24"/>
+  <circle class="dot" cx="215" cy="152" r="3"/><circle class="dot" cx="305" cy="152" r="3"/>
+  <circle class="dot" cx="215" cy="258" r="3"/>
+  <text x="202" y="200" text-anchor="end" class="small">C1 · 100 nF</text>
+  <text x="292" y="200" text-anchor="end" class="small">C2 · 10 µF</text>
+  <use href="#vdd" x="330" y="152"/><use href="#gnd" x="215" y="258"/>
+
+  <text x="40" y="322" class="label">Roll input</text>
+  <use href="#vdd" x="82" y="360"/>
+  <path class="wire" d="M82 360v12m0 44v20h308m-308 0v18m0 39v17"/>
+  <use href="#resistor" x="82" y="372" transform="rotate(90 82 372)"/>
+  <use href="#open-switch" x="82" y="454" transform="rotate(90 82 454)"/>
+  <use href="#gnd" x="82" y="510"/>
+  <circle class="dot" cx="82" cy="436" r="3"/>
+  <text x="100" y="399" class="small">R8 · 10 kOhm</text><text x="100" y="479" class="small">SW2 · normally open</text>
+  <text x="229" y="426" class="small">ROLL_N</text>
+
+  <rect class="component" x="390" y="135" width="190" height="378" rx="6"/>
+  <text class="label" x="485" y="166" text-anchor="middle">U1 · ATtiny1616</text>
+  <text class="small" x="485" y="190" text-anchor="middle">20-pin SOIC</text>
+  <text x="401" y="222" class="small">1 VDD</text>
+  <path class="wire" d="M390 218h-22v-15"/><use href="#vdd" x="368" y="203"/>
+  <text x="401" y="263" class="small">20 GND</text>
+  <path class="wire" d="M390 260h-22v13"/><use href="#gnd" x="368" y="273"/>
+  <text x="401" y="441" class="small">17 PA1</text>
+  <text x="401" y="485" class="small">16 PA0 / UPDI</text>
+  <path class="wire" d="M390 481h-70v83"/>
+  <text x="271" y="588" class="label">J1 · UPDI</text>
+  <path class="wire" d="M278 565v-16m82 16h31v13"/>
+  <use href="#vdd" x="278" y="549"/><use href="#gnd" x="391" y="578"/>
+  <circle class="component" cx="278" cy="565" r="4"/><circle class="component" cx="320" cy="565" r="4"/><circle class="component" cx="360" cy="565" r="4"/>
+  <text x="269" y="614" class="small">1 VDD</text><text x="319" y="614" class="small">2 UPDI</text><text x="375" y="614" class="small">3 GND</text>
+
+  <text x="640" y="113" class="label">Seven LED branches</text>
+  <text x="567" y="223" class="small" text-anchor="end">2 PA4</text>
+  <path class="wire" d="M580 218h58m44 0h66m16 0h85"/>
+  <use href="#resistor" x="638" y="218"/><use href="#led" x="748" y="218"/>
+  <text x="660" y="205" class="small" text-anchor="middle">R1 · 680 ohm</text>
+  <text x="794" y="205" class="small">D1</text>
+  <text x="884" y="223" class="small">upper left</text>
+  <circle class="dot" cx="849" cy="218" r="3"/>
+  <text x="567" y="266" class="small" text-anchor="end">3 PA5</text>
+  <path class="wire" d="M580 261h58m44 0h66m16 0h85"/>
+  <use href="#resistor" x="638" y="261"/><use href="#led" x="748" y="261"/>
+  <text x="660" y="248" class="small" text-anchor="middle">R2 · 680 ohm</text>
+  <text x="794" y="248" class="small">D2</text>
+  <text x="884" y="266" class="small">upper right</text>
+  <circle class="dot" cx="849" cy="261" r="3"/>
+  <text x="567" y="309" class="small" text-anchor="end">4 PA6</text>
+  <path class="wire" d="M580 304h58m44 0h66m16 0h85"/>
+  <use href="#resistor" x="638" y="304"/><use href="#led" x="748" y="304"/>
+  <text x="660" y="291" class="small" text-anchor="middle">R3 · 680 ohm</text>
+  <text x="794" y="291" class="small">D3</text>
+  <text x="884" y="309" class="small">middle left</text>
+  <circle class="dot" cx="849" cy="304" r="3"/>
+  <text x="567" y="352" class="small" text-anchor="end">5 PA7</text>
+  <path class="wire" d="M580 347h58m44 0h66m16 0h85"/>
+  <use href="#resistor" x="638" y="347"/><use href="#led" x="748" y="347"/>
+  <text x="660" y="334" class="small" text-anchor="middle">R4 · 680 ohm</text>
+  <text x="794" y="334" class="small">D4</text>
+  <text x="884" y="352" class="small">center</text>
+  <circle class="dot" cx="849" cy="347" r="3"/>
+  <text x="567" y="395" class="small" text-anchor="end">6 PB5</text>
+  <path class="wire" d="M580 390h58m44 0h66m16 0h85"/>
+  <use href="#resistor" x="638" y="390"/><use href="#led" x="748" y="390"/>
+  <text x="660" y="377" class="small" text-anchor="middle">R5 · 680 ohm</text>
+  <text x="794" y="377" class="small">D5</text>
+  <text x="884" y="395" class="small">middle right</text>
+  <circle class="dot" cx="849" cy="390" r="3"/>
+  <text x="567" y="438" class="small" text-anchor="end">7 PB4</text>
+  <path class="wire" d="M580 433h58m44 0h66m16 0h85"/>
+  <use href="#resistor" x="638" y="433"/><use href="#led" x="748" y="433"/>
+  <text x="660" y="420" class="small" text-anchor="middle">R6 · 680 ohm</text>
+  <text x="794" y="420" class="small">D6</text>
+  <text x="884" y="438" class="small">lower left</text>
+  <circle class="dot" cx="849" cy="433" r="3"/>
+  <text x="567" y="481" class="small" text-anchor="end">8 PB3</text>
+  <path class="wire" d="M580 476h58m44 0h66m16 0h85"/>
+  <use href="#resistor" x="638" y="476"/><use href="#led" x="748" y="476"/>
+  <text x="660" y="463" class="small" text-anchor="middle">R7 · 680 ohm</text>
+  <text x="794" y="463" class="small">D7</text>
+  <text x="884" y="481" class="small">lower right</text>
+
+  <path class="wire" d="M849 218v285"/><use href="#gnd" x="849" y="503"/>
+  <text x="640" y="567" class="small">D1–D7 Vishay TLLR4400 · cathodes to GND</text>
+  <text x="640" y="592" class="small">Unused U1 pins 9–15, 18 and 19 are unconnected.</text>
+</svg>

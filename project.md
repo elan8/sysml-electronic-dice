@@ -19,6 +19,6 @@ From the workspace containing the Elan8 checkouts:
     -DomainLibraryPath ./run42/.cache/domain-library/model
 ```
 
-The selected model passes Spec42 with zero warnings or errors. A Spec42 model export with referenced library elements also passes the methodology's `check_structure.py --complete-selection` check. Both Run42 cases fail their assertions at 3 ms and pass at 10 ms. Doc42 reads both JSON files and generates the report.
+The selected model passes Spec42 with zero warnings or errors. A Spec42 model export with referenced library elements also passes the methodology's `check_structure.py --complete-selection` check. Both controller cases fail their assertions at 3 ms and pass at 10 ms. The three electrical cases pass at both settings. Doc42 reads both JSON files and generates the report.
 
-The stimulus starts with the switch open. The 6 ms transients and 40 ms stable periods are illustrative. The tests bypass GPIO physics and exercise the selected controller behavior with logical edges. The report establishes the outcome for the two authored scenarios.
+The controller stimulus starts with the switch open. The 6 ms transients and 40 ms stable periods are illustrative. Those cases inject logical edges and observe the selected controller. The electrical cases use the fixed 4.5 V battery equivalent, a scripted contact closure and scripted GPIO outputs. The electrical run records the final voltage and current observations and provides per-case traces. The [schematic and circuit notes](hardware/README.md) document the selected components and equivalent-model assumptions.

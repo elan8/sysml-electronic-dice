@@ -5,7 +5,7 @@ package DiceDocuments {
         @Document {
             title = "Electronic Dice Verification Report";
             number = "DICE-VR-001";
-            revision = "A";
+            revision = "B";
             status = "Demo";
             template = "verification-report";
         }
@@ -16,7 +16,7 @@ package DiceDocuments {
             @Table {
                 columns = "Case = name, Verdict = verdict, Detail = verdict-detail";
                 kind = "verification case";
-                verdicts = "fast-verdicts.json";
+                verdicts = "fast-controller-verdicts.json";
                 caption = "3 ms comparison";
             }
             expose DiceVerification::bouncingPress;
@@ -35,10 +35,35 @@ package DiceDocuments {
             @Table {
                 columns = "Case = name, Verdict = verdict, Time = verdict-time, Final state = verdict-state";
                 kind = "verification case";
-                verdicts = "verdicts.json";
+                verdicts = "controller-verdicts.json";
             }
             expose DiceVerification::bouncingPress;
             expose DiceVerification::releaseAndRollAgain;
+        }
+        view electricalRequirements {
+            @Section { title = "Electrical requirements"; }
+            @Table {
+                columns = "ID = id, Text = text, Verified by = verified-by";
+                kind = "requirement";
+            }
+            expose DiceCircuit::railAndCurrent;
+            expose DiceCircuit::pipDrive;
+            expose DiceCircuit::buttonLevels;
+        }
+        view electricalResults {
+            @Section { title = "Battery-powered circuit results"; }
+            doc /* A nominal 4.5 V source represents three series AAA alkaline
+                 * cells. The Modelica circuit includes the supply, decoupling,
+                 * button and seven LED branches. The electrical test fixture
+                 * commands the LED outputs independently of the button. */
+            @Table {
+                columns = "Case = name, Verifies = verifies, Verdict = verdict, Time = verdict-time";
+                kind = "verification case";
+                verdicts = "electrical-verdicts.json";
+            }
+            expose DiceCircuit::blankReleased;
+            expose DiceCircuit::sixPressed;
+            expose DiceCircuit::oneReleased;
         }
         view architecture : StandardViewDefinitions::InterconnectionView {
             @Section { title = "Product architecture"; }

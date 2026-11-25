@@ -38,8 +38,10 @@ package ElectronicDice {
 
     part def DiceIntegration :> DiceArchitecture, SystemIntegration {
         part redefines controller : RollController::RollControllerArchitecture;
+        part redefines battery : ThreeAaaAlkalinePack;
     }
     part demoDie : DiceIntegration;
+    dependency circuitRealizesSelectedDesign from DiceCircuit::Board to DiceIntegration;
 
     package Views {
         view specification : SpecificationView {
