@@ -36,6 +36,10 @@ package DiceCircuit {
         port negative : Pin;
     }
 
+    part def BouncingButtonContact :> PushButtonContact {
+        @ModelicaModel { className = "ElectronicDiceBoard.BouncingButtonContact"; resourceUri = "ElectronicDiceBoard.mo"; }
+    }
+
     part def LedBranch {
         @ModelicaModel { className = "ElectronicDiceBoard.LedBranch"; resourceUri = "ElectronicDiceBoard.mo"; }
         attribute resistance : ResistanceValue = 680 [ohm];
@@ -66,6 +70,10 @@ package DiceCircuit {
     part def Ground {
         @ModelicaModel { className = "ElectronicDiceBoard.Ground"; resourceUri = "ElectronicDiceBoard.mo"; }
         port pin : Pin;
+    }
+
+    part def DrivenAtTiny1616Io :> AtTiny1616Io {
+        @ModelicaModel { className = "ElectronicDiceBoard.DrivenAtTiny1616Io"; resourceUri = "ElectronicDiceBoard.mo"; }
     }
 
     part def Board {
@@ -146,6 +154,11 @@ package DiceCircuit {
         bind bottomLeftCurrent = bottomLeft.current;
         attribute bottomRightCurrent : ElectricCurrentValue;
         bind bottomRightCurrent = bottomRight.current;
+    }
+
+    part def ClosedLoopBoard :> Board {
+        part redefines mcu : DrivenAtTiny1616Io;
+        part redefines rollSwitch : BouncingButtonContact;
     }
 
     requirement <'DICE-ELEC-001'> railAndCurrent {

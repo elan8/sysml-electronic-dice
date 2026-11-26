@@ -38,13 +38,31 @@ package ElectronicDiceBoard "Electrical equivalents for the electronic die"
     positive.i + negative.i = 0;
   end DecouplingCapacitor;
 
-  model PushButtonContact "The physical test presses at 2 ms and releases at 8 ms"
+  partial model ResistiveContact
     Pin positive;
     Pin negative;
+    Boolean closed;
   equation
-    positive.i = (positive.v - negative.v) / (if time >= 0.002 and time < 0.008 then 1 else 1e9);
+    positive.i = (positive.v - negative.v) / (if closed then 1 else 1e9);
     positive.i + negative.i = 0;
+  end ResistiveContact;
+
+  model PushButtonContact "The physical test presses at 2 ms and releases at 8 ms"
+    extends ResistiveContact;
+  equation
+    closed = time >= 0.002 and time < 0.008;
   end PushButtonContact;
+
+  model BouncingButtonContact "Six presses 100 ms apart, each with a 6 ms bounce"
+    extends ResistiveContact;
+    Real playPhase(unit = "s");
+  equation
+    playPhase = time - (if time < 0.1 then 0 else if time < 0.2 then 0.1
+      else if time < 0.3 then 0.2 else if time < 0.4 then 0.3
+      else if time < 0.5 then 0.4 else 0.5);
+    closed = (playPhase >= 0.0055 and playPhase < 0.0115)
+      or (playPhase >= 0.0175 and playPhase < 0.0575);
+  end BouncingButtonContact;
 
   model LedBranch "Piecewise-linear LED with an explicit series resistor"
     parameter Real resistance(unit = "Ohm");
@@ -71,7 +89,7 @@ package ElectronicDiceBoard "Electrical equivalents for the electronic die"
     returnCurrent = if high then 0 else -pin.i;
   end GpioDriver;
 
-  model AtTiny1616Io "GPIO and load equivalent; the test drives pip commands independently of the button"
+  partial model AtTiny1616Outputs "ATtiny1616 supply, active-low input, and seven GPIO outputs"
     Pin vdd;
     Pin gnd;
     Pin button;
@@ -84,8 +102,7 @@ package ElectronicDiceBoard "Electrical equivalents for the electronic die"
     Pin bottomRight;
     Real railVoltage(unit = "V");
     Real buttonVoltage(unit = "V");
-    Boolean showSix;
-    Boolean showOne;
+    Real activeFace "0 blanks the display";
     GpioDriver topLeftDriver;
     GpioDriver topRightDriver;
     GpioDriver middleLeftDriver;
@@ -94,24 +111,24 @@ package ElectronicDiceBoard "Electrical equivalents for the electronic die"
     GpioDriver bottomLeftDriver;
     GpioDriver bottomRightDriver;
   equation
-    showSix = time >= 0.001 and time < 0.006;
-    showOne = time >= 0.006;
     railVoltage = vdd.v - gnd.v;
     buttonVoltage = button.v - gnd.v;
     button.i = 0;
-    topLeftDriver.high = showSix;
+    topLeftDriver.high = activeFace >= 1.5;
     connect(topLeft, topLeftDriver.pin);
-    topRightDriver.high = showSix;
+    topRightDriver.high = activeFace >= 3.5;
     connect(topRight, topRightDriver.pin);
-    middleLeftDriver.high = showSix;
+    middleLeftDriver.high = activeFace >= 5.5;
     connect(middleLeft, middleLeftDriver.pin);
-    centerDriver.high = showOne;
+    centerDriver.high = (activeFace >= 0.5 and activeFace < 1.5)
+      or (activeFace >= 2.5 and activeFace < 3.5)
+      or (activeFace >= 4.5 and activeFace < 5.5);
     connect(center, centerDriver.pin);
-    middleRightDriver.high = showSix;
+    middleRightDriver.high = activeFace >= 5.5;
     connect(middleRight, middleRightDriver.pin);
-    bottomLeftDriver.high = showSix;
+    bottomLeftDriver.high = activeFace >= 3.5;
     connect(bottomLeft, bottomLeftDriver.pin);
-    bottomRightDriver.high = showSix;
+    bottomRightDriver.high = activeFace >= 1.5;
     connect(bottomRight, bottomRightDriver.pin);
     // Connector flows of the internal drivers are included in the supply load.
     vdd.i = 0.002 + topLeftDriver.supplyCurrent + topRightDriver.supplyCurrent + middleLeftDriver.supplyCurrent + centerDriver.supplyCurrent + middleRightDriver.supplyCurrent + bottomLeftDriver.supplyCurrent + bottomRightDriver.supplyCurrent;
@@ -130,7 +147,20 @@ package ElectronicDiceBoard "Electrical equivalents for the electronic die"
     bottomLeftDriver.lowVoltage = gnd.v;
     bottomRightDriver.highVoltage = vdd.v;
     bottomRightDriver.lowVoltage = gnd.v;
+  end AtTiny1616Outputs;
+
+  model AtTiny1616Io "Independent component verification fixture"
+    extends AtTiny1616Outputs;
+  equation
+    activeFace = if time < 0.001 then 0 else if time < 0.006 then 6 else 1;
   end AtTiny1616Io;
+
+  model DrivenAtTiny1616Io "Face command held between controller samples"
+    extends AtTiny1616Outputs;
+    input Real faceCommand;
+  equation
+    activeFace = faceCommand;
+  end DrivenAtTiny1616Io;
 
   model Ground
     Pin pin;

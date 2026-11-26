@@ -15,11 +15,19 @@ package ElectronicDice {
     dependency rollRequirementSource
         from oneRollPerPress to DiceStakeholderRequirements::throwAtWill;
 
+    requirement <'DICE-SYS-002'> displayTimeout {
+        subject die : DiceSpecification;
+        doc /* The demo configuration shall blank the display 250 ms after
+             * the most recent accepted roll. An accepted roll restarts the
+             * display interval. */
+    }
+
     part def DiceSpecification :> SystemSpecification {
         port button : ~ActuationPort;
         port display : PipPort;
         attribute rollsPerPress : Integer;
         satisfy oneRollPerPress;
+        satisfy displayTimeout;
     }
 
     part def DiceArchitecture :> DiceSpecification, SystemArchitecture {
@@ -47,6 +55,7 @@ package ElectronicDice {
         view specification : SpecificationView {
             expose ElectronicDice::DiceSpecification;
             expose ElectronicDice::oneRollPerPress;
+            expose ElectronicDice::displayTimeout;
         }
         view architecture : ArchitectureView {
             expose ElectronicDice::DiceArchitecture;

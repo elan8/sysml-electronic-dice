@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "root": "DiceCircuit::ClosedLoopBoard",
+  "state": "DiceClosedLoop::SampledController::controller",
+  "case": "DiceClosedLoop::playSixRolls",
+  "wasm": {
+    "module": "dice-controller.wasm",
+    "fuel": 1000000,
+    "memory_bytes": 2097152,
+    "exports": {
+      "version": "api",
+      "boot": "initialize",
+      "time": "clock",
+      "next_event": "deadline",
+      "advance_to": "advance",
+      "signal": "receive",
+      "read": "sample",
+      "provide": "provide"
+    },
+    "observations": [
+      {
+        "attribute": "DiceClosedLoop::SampledController::controller::faceCommand",
+        "index": 0,
+        "unit": null
+      },
+      {
+        "attribute": "DiceClosedLoop::SampledController::controller::acceptedRolls",
+        "index": 1,
+        "unit": null
+      },
+      {
+        "attribute": "DiceClosedLoop::SampledController::controller::contactEdges",
+        "index": 2,
+        "unit": null
+      },
+      {
+        "attribute": "DiceClosedLoop::SampledController::controller::blankTime",
+        "index": 3,
+        "unit": "s"
+      },
+      {
+        "attribute": "DiceClosedLoop::SampledController::controller::sequenceErrors",
+        "index": 4,
+        "unit": null
+      },
+      {
+        "attribute": "DiceClosedLoop::SampledController::controller::patternErrors",
+        "index": 5,
+        "unit": null
+      },
+      {
+        "attribute": "DiceClosedLoop::SampledController::controller::verifiedFaces",
+        "index": 6,
+        "unit": null
+      }
+    ],
+    "provides": [
+      {
+        "variable": "mcu.buttonVoltage",
+        "index": 0,
+        "unit": "V"
+      },
+      {
+        "variable": "mcu.railVoltage",
+        "index": 1,
+        "unit": "V"
+      },
+      {
+        "variable": "topLeft.current",
+        "index": 2,
+        "unit": "A"
+      },
+      {
+        "variable": "topRight.current",
+        "index": 3,
+        "unit": "A"
+      },
+      {
+        "variable": "middleLeft.current",
+        "index": 4,
+        "unit": "A"
+      },
+      {
+        "variable": "center.current",
+        "index": 5,
+        "unit": "A"
+      },
+      {
+        "variable": "middleRight.current",
+        "index": 6,
+        "unit": "A"
+      },
+      {
+        "variable": "bottomLeft.current",
+        "index": 7,
+        "unit": "A"
+      },
+      {
+        "variable": "bottomRight.current",
+        "index": 8,
+        "unit": "A"
+      }
+    ]
+  },
+  "bindings": [
+    {
+      "attribute": "DiceClosedLoop::SampledController::controller::faceCommand",
+      "input": "faceCommand"
+    }
+  ],
+  "plant_observations": [
+    {
+      "attribute": "DiceClosedLoop::SampledController::controller::buttonVoltage",
+      "variable": "mcu.buttonVoltage",
+      "unit": "V"
+    },
+    {
+      "attribute": "DiceClosedLoop::SampledController::controller::railVoltage",
+      "variable": "mcu.railVoltage",
+      "unit": "V"
+    },
+    {
+      "attribute": "DiceClosedLoop::SampledController::controller::topLeftCurrent",
+      "variable": "topLeft.current",
+      "unit": "A"
+    },
+    {
+      "attribute": "DiceClosedLoop::SampledController::controller::topRightCurrent",
+      "variable": "topRight.current",
+      "unit": "A"
+    },
+    {
+      "attribute": "DiceClosedLoop::SampledController::controller::middleLeftCurrent",
+      "variable": "middleLeft.current",
+      "unit": "A"
+    },
+    {
+      "attribute": "DiceClosedLoop::SampledController::controller::centerCurrent",
+      "variable": "center.current",
+      "unit": "A"
+    },
+    {
+      "attribute": "DiceClosedLoop::SampledController::controller::middleRightCurrent",
+      "variable": "middleRight.current",
+      "unit": "A"
+    },
+    {
+      "attribute": "DiceClosedLoop::SampledController::controller::bottomLeftCurrent",
+      "variable": "bottomLeft.current",
+      "unit": "A"
+    },
+    {
+      "attribute": "DiceClosedLoop::SampledController::controller::bottomRightCurrent",
+      "variable": "bottomRight.current",
+      "unit": "A"
+    }
+  ],
+  "rtol": 1e-7,
+  "atol": 1e-9
+}

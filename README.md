@@ -14,6 +14,7 @@ The project follows [Elan8 MBSE Methodology](https://github.com/elan8/mbse-metho
 | [Roll controller](model/60_systems/RollController/system.sysml) | Controller contract and firmware behavior allocated to the microcontroller. |
 | [Verification](model/60_systems/00_ElectronicDice/Verification.sysml) | Timed raw-contact inputs and assertions on roll count and face. |
 | [Circuit](hardware/README.md) | Schematic, physical net connections, pip mapping, and SysML/Modelica electrical simulation. |
+| [Closed-loop fixture](co-simulation/ClosedLoop.sysml) | A bouncing contact drives the actual simulated GPIO input. A Wasm controller reads that voltage and commands the LED circuit. |
 | [Report](model/80_documents/Documents.sysml) | Doc42 architecture, requirement traceability and Run42 verdicts. |
 
 ## Run the demo
@@ -33,6 +34,21 @@ Pass `-Spec42`, `-Run42` and `-Doc42` to select specific executables. Each execu
 | One bouncing press | Fail. The count and face assertions fail. | Pass. One roll registers. |
 | Release bounce and a second deliberate press | Fail. The count and face assertions fail. | Pass. Two rolls register. |
 
-The logical controller uses raw contact edges with 6 ms transient pulses and 40 ms stable intervals. The selected design qualifies closure before accepting a roll and qualifies opening before re-arming. It advances through a deterministic 1–6 sequence for verification. Display timeout, random face selection, and a compiled firmware build are follow-on work.
+The standalone controller uses raw contact edges with 6 ms transient pulses and 40 ms stable intervals. The selected design qualifies closure before accepting a roll and qualifies opening before re-arming. It advances through a deterministic 1–6 sequence for verification.
 
-The circuit cases apply independently scripted button and GPIO states. They verify blank with the button released, six pips with the button held, and the center pip with the button released. The simulation uses nominal component equivalents and a fixed battery model. It covers electrical behavior for the authored fixtures. Firmware-to-circuit co-simulation, battery life and bench validation are follow-on work.
+The standalone circuit cases apply scripted button and GPIO states. They verify blank with the button released, six pips with the button held, and the center pip with the button released. The simulation uses nominal component equivalents and a fixed battery model.
+
+## Run the closed-loop demo
+
+Use the same toolchain plus Rust with the `wasm32-unknown-unknown` target. Run42 needs its Wasm–Modelica execution driver with ABI 2. From this project directory:
+
+```powershell
+rustup target add wasm32-unknown-unknown
+./scripts/closed-loop.ps1 -StdlibPath <expanded-stdlib> -DomainLibraryPath <domain-library-model>
+```
+
+The script builds the [Rust controller](co-simulation/controller.rs) with no external Rust dependencies, stages the co-simulation case, and runs it alongside the standalone cases. The Modelica contact makes six presses 100 ms apart. Each starts with a 6 ms closure, followed by a 6 ms opening and a 40 ms stable closure. Run42 feeds the controller the simulated button and rail voltages every millisecond. The 10 ms debounce accepts one roll per press, and each accepted roll restarts the 250 ms display timer.
+
+The [verification monitor](co-simulation/play_monitor.rs) checks the roll count and command at every tick. It compares all seven measured currents with the expected pip pattern for each of the six faces, then checks that the display blanks. The output directory contains the Run42 JSON verdicts, CSV and SVG traces, and the Doc42 report `DICE-VR-002.pdf`.
+
+The controller runs as a Wasm guest with a deterministic face sequence. Random face selection, a flashable ATtiny1616 build, battery life, and bench validation are follow-on work.
