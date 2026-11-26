@@ -42,7 +42,7 @@ package DiceCircuit {
 
     part def LedBranch {
         @ModelicaModel { className = "ElectronicDiceBoard.LedBranch"; resourceUri = "ElectronicDiceBoard.mo"; }
-        attribute resistance : ResistanceValue = 680 [ohm];
+        attribute resistance : ResistanceValue default 680 [ohm];
         attribute forwardVoltage : ElectricPotentialValue = 1.9 [V];
         attribute current : ElectricCurrentValue;
         port positive : Pin;
@@ -76,12 +76,20 @@ package DiceCircuit {
         @ModelicaModel { className = "ElectronicDiceBoard.DrivenAtTiny1616Io"; resourceUri = "ElectronicDiceBoard.mo"; }
     }
 
+    part def Stm32GpioIo :> AtTiny1616Io {
+        @ModelicaModel { className = "ElectronicDiceBoard.Stm32GpioIo"; resourceUri = "ElectronicDiceBoard.mo"; }
+    }
+
+    part def Stm32LedBranch :> LedBranch {
+        attribute :>> resistance = 560 [ohm];
+    }
+
     part def Board {
         doc /* Electrical realization of the selected die. Seven branches
              * represent R1–R7 and D1–D7. The power switch is held on in these
              * operating-point tests and modeled as its contact resistance. */
         part battery : AlkalinePack {
-            attribute :>> voltage = 4.5 [V];
+            attribute :>> voltage default 4.5 [V];
             attribute :>> internalResistance = 0.9 [ohm];
         }
         part powerSwitch : Resistor { attribute :>> resistance = 0.1 [ohm]; }
@@ -89,11 +97,11 @@ package DiceCircuit {
         part ground : Ground;
         part decoupling : DecouplingCapacitor {
             attribute :>> capacitance = 0.1 [micro * F];
-            attribute :>> initialVoltage = 4.5 [V];
+            attribute :>> initialVoltage default 4.5 [V];
         }
         part bulk : DecouplingCapacitor {
             attribute :>> capacitance = 10 [micro * F];
-            attribute :>> initialVoltage = 4.5 [V];
+            attribute :>> initialVoltage default 4.5 [V];
         }
         part rollSwitch : PushButtonContact;
         part pullup : Resistor { attribute :>> resistance = 10 [kilo * ohm]; }
@@ -159,6 +167,23 @@ package DiceCircuit {
     part def ClosedLoopBoard :> Board {
         part redefines mcu : DrivenAtTiny1616Io;
         part redefines rollSwitch : BouncingButtonContact;
+    }
+
+    part def Stm32Bench :> Board {
+        doc /* The emulator comparison bench uses a nominal 3.3 V source.
+             * It retains the switch and LED topology of the circuit. */
+        part redefines mcu : Stm32GpioIo;
+        part redefines rollSwitch : BouncingButtonContact;
+        part redefines battery : AlkalinePack { attribute :>> voltage = 3.3 [V]; }
+        part redefines decoupling : DecouplingCapacitor { attribute :>> initialVoltage = 3.3 [V]; }
+        part redefines bulk : DecouplingCapacitor { attribute :>> initialVoltage = 3.3 [V]; }
+        part redefines topLeft : Stm32LedBranch;
+        part redefines topRight : Stm32LedBranch;
+        part redefines middleLeft : Stm32LedBranch;
+        part redefines center : Stm32LedBranch;
+        part redefines middleRight : Stm32LedBranch;
+        part redefines bottomLeft : Stm32LedBranch;
+        part redefines bottomRight : Stm32LedBranch;
     }
 
     requirement <'DICE-ELEC-001'> railAndCurrent {

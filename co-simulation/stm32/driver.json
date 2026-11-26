@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "root": "DiceCircuit::Stm32Bench",
+  "state": "DiceElf::Firmware::running",
+  "case": "DiceElf::playSixRolls",
+  "elf": {
+    "image": "dice.elf",
+    "system": "",
+    "tick_ns": 1000000,
+    "observations": [
+      {
+        "attribute": "DiceElf::Firmware::running::rolls",
+        "symbol": "DICE_ROLLS"
+      },
+      {
+        "attribute": "DiceElf::Firmware::running::contactEdges",
+        "symbol": "DICE_EDGES"
+      },
+      {
+        "attribute": "DiceElf::Firmware::running::blankMs",
+        "symbol": "DICE_BLANK_MS"
+      },
+      {
+        "attribute": "DiceElf::Firmware::running::lastRollMs",
+        "symbol": "DICE_LAST_ROLL_MS"
+      },
+      {
+        "attribute": "DiceElf::Firmware::running::topLeft",
+        "pin": "PD0"
+      },
+      {
+        "attribute": "DiceElf::Firmware::running::topRight",
+        "pin": "PD1"
+      },
+      {
+        "attribute": "DiceElf::Firmware::running::middleLeft",
+        "pin": "PD2"
+      },
+      {
+        "attribute": "DiceElf::Firmware::running::center",
+        "pin": "PD3"
+      },
+      {
+        "attribute": "DiceElf::Firmware::running::middleRight",
+        "pin": "PD4"
+      },
+      {
+        "attribute": "DiceElf::Firmware::running::bottomLeft",
+        "pin": "PD5"
+      },
+      {
+        "attribute": "DiceElf::Firmware::running::bottomRight",
+        "pin": "PD6"
+      }
+    ],
+    "provides": [
+      {
+        "variable": "mcu.buttonVoltage",
+        "pad": "PA0",
+        "unit": "V",
+        "digital_threshold": 1.65
+      }
+    ]
+  },
+  "bindings": [
+    {
+      "attribute": "DiceElf::Firmware::running::topLeft",
+      "input": "pd0"
+    },
+    {
+      "attribute": "DiceElf::Firmware::running::topRight",
+      "input": "pd1"
+    },
+    {
+      "attribute": "DiceElf::Firmware::running::middleLeft",
+      "input": "pd2"
+    },
+    {
+      "attribute": "DiceElf::Firmware::running::center",
+      "input": "pd3"
+    },
+    {
+      "attribute": "DiceElf::Firmware::running::middleRight",
+      "input": "pd4"
+    },
+    {
+      "attribute": "DiceElf::Firmware::running::bottomLeft",
+      "input": "pd5"
+    },
+    {
+      "attribute": "DiceElf::Firmware::running::bottomRight",
+      "input": "pd6"
+    }
+  ],
+  "plant_observations": [
+    {
+      "attribute": "DiceElf::Firmware::running::topLeftCurrent",
+      "variable": "topLeft.current",
+      "unit": "A"
+    },
+    {
+      "attribute": "DiceElf::Firmware::running::topRightCurrent",
+      "variable": "topRight.current",
+      "unit": "A"
+    },
+    {
+      "attribute": "DiceElf::Firmware::running::middleLeftCurrent",
+      "variable": "middleLeft.current",
+      "unit": "A"
+    },
+    {
+      "attribute": "DiceElf::Firmware::running::centerCurrent",
+      "variable": "center.current",
+      "unit": "A"
+    },
+    {
+      "attribute": "DiceElf::Firmware::running::middleRightCurrent",
+      "variable": "middleRight.current",
+      "unit": "A"
+    },
+    {
+      "attribute": "DiceElf::Firmware::running::bottomLeftCurrent",
+      "variable": "bottomLeft.current",
+      "unit": "A"
+    },
+    {
+      "attribute": "DiceElf::Firmware::running::bottomRightCurrent",
+      "variable": "bottomRight.current",
+      "unit": "A"
+    }
+  ],
+  "rtol": 1e-7,
+  "atol": 1e-9
+}

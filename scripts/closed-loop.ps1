@@ -25,7 +25,7 @@ New-Item -ItemType Directory -Path $run | Out-Null
 Copy-Item -LiteralPath (Join-Path $project 'model') -Destination $model -Recurse
 Copy-Item -LiteralPath (Join-Path $fixture 'ClosedLoop.sysml') -Destination (Join-Path $model '60_systems/00_ElectronicDice')
 Copy-Item -LiteralPath (Join-Path $fixture 'ClosedLoopReport.sysml') -Destination $documents
-$guestSources = 'controller.rs', 'play_monitor.rs', 'driver.json'
+$guestSources = 'controller.rs', 'dice_logic.rs', 'play_monitor.rs', 'driver.json'
 Copy-Item -LiteralPath ($guestSources | ForEach-Object { Join-Path $fixture $_ }) -Destination $run
 
 & $Spec42 check $model --workspace-root $model --stdlib-path $stdlib --disable-kpar-library domain --disable-kpar-library method --library-path $domain --warnings-as-errors

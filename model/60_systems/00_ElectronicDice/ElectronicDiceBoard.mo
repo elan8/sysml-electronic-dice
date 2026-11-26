@@ -89,7 +89,7 @@ package ElectronicDiceBoard "Electrical equivalents for the electronic die"
     returnCurrent = if high then 0 else -pin.i;
   end GpioDriver;
 
-  partial model AtTiny1616Outputs "ATtiny1616 supply, active-low input, and seven GPIO outputs"
+  partial model GpioOutputs "Supply, active-low input, and seven GPIO output equivalents"
     Pin vdd;
     Pin gnd;
     Pin button;
@@ -102,7 +102,13 @@ package ElectronicDiceBoard "Electrical equivalents for the electronic die"
     Pin bottomRight;
     Real railVoltage(unit = "V");
     Real buttonVoltage(unit = "V");
-    Real activeFace "0 blanks the display";
+    Boolean topLeftHigh;
+    Boolean topRightHigh;
+    Boolean middleLeftHigh;
+    Boolean centerHigh;
+    Boolean middleRightHigh;
+    Boolean bottomLeftHigh;
+    Boolean bottomRightHigh;
     GpioDriver topLeftDriver;
     GpioDriver topRightDriver;
     GpioDriver middleLeftDriver;
@@ -114,21 +120,19 @@ package ElectronicDiceBoard "Electrical equivalents for the electronic die"
     railVoltage = vdd.v - gnd.v;
     buttonVoltage = button.v - gnd.v;
     button.i = 0;
-    topLeftDriver.high = activeFace >= 1.5;
+    topLeftDriver.high = topLeftHigh;
     connect(topLeft, topLeftDriver.pin);
-    topRightDriver.high = activeFace >= 3.5;
+    topRightDriver.high = topRightHigh;
     connect(topRight, topRightDriver.pin);
-    middleLeftDriver.high = activeFace >= 5.5;
+    middleLeftDriver.high = middleLeftHigh;
     connect(middleLeft, middleLeftDriver.pin);
-    centerDriver.high = (activeFace >= 0.5 and activeFace < 1.5)
-      or (activeFace >= 2.5 and activeFace < 3.5)
-      or (activeFace >= 4.5 and activeFace < 5.5);
+    centerDriver.high = centerHigh;
     connect(center, centerDriver.pin);
-    middleRightDriver.high = activeFace >= 5.5;
+    middleRightDriver.high = middleRightHigh;
     connect(middleRight, middleRightDriver.pin);
-    bottomLeftDriver.high = activeFace >= 3.5;
+    bottomLeftDriver.high = bottomLeftHigh;
     connect(bottomLeft, bottomLeftDriver.pin);
-    bottomRightDriver.high = activeFace >= 1.5;
+    bottomRightDriver.high = bottomRightHigh;
     connect(bottomRight, bottomRightDriver.pin);
     // Connector flows of the internal drivers are included in the supply load.
     vdd.i = 0.002 + topLeftDriver.supplyCurrent + topRightDriver.supplyCurrent + middleLeftDriver.supplyCurrent + centerDriver.supplyCurrent + middleRightDriver.supplyCurrent + bottomLeftDriver.supplyCurrent + bottomRightDriver.supplyCurrent;
@@ -147,7 +151,41 @@ package ElectronicDiceBoard "Electrical equivalents for the electronic die"
     bottomLeftDriver.lowVoltage = gnd.v;
     bottomRightDriver.highVoltage = vdd.v;
     bottomRightDriver.lowVoltage = gnd.v;
+  end GpioOutputs;
+
+  partial model AtTiny1616Outputs
+    extends GpioOutputs;
+    Real activeFace "0 blanks the display";
+  equation
+    topLeftHigh = activeFace >= 1.5;
+    topRightHigh = activeFace >= 3.5;
+    middleLeftHigh = activeFace >= 5.5;
+    centerHigh = (activeFace >= 0.5 and activeFace < 1.5)
+      or (activeFace >= 2.5 and activeFace < 3.5)
+      or (activeFace >= 4.5 and activeFace < 5.5);
+    middleRightHigh = activeFace >= 5.5;
+    bottomLeftHigh = activeFace >= 3.5;
+    bottomRightHigh = activeFace >= 1.5;
   end AtTiny1616Outputs;
+
+  model Stm32GpioIo "Seven GPIO levels from an emulated STM32F407"
+    extends GpioOutputs;
+    input Real pd0;
+    input Real pd1;
+    input Real pd2;
+    input Real pd3;
+    input Real pd4;
+    input Real pd5;
+    input Real pd6;
+  equation
+    topLeftHigh = pd0 >= 0.5;
+    topRightHigh = pd1 >= 0.5;
+    middleLeftHigh = pd2 >= 0.5;
+    centerHigh = pd3 >= 0.5;
+    middleRightHigh = pd4 >= 0.5;
+    bottomLeftHigh = pd5 >= 0.5;
+    bottomRightHigh = pd6 >= 0.5;
+  end Stm32GpioIo;
 
   model AtTiny1616Io "Independent component verification fixture"
     extends AtTiny1616Outputs;

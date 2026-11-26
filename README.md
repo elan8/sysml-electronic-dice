@@ -52,3 +52,26 @@ The script builds the [Rust controller](co-simulation/controller.rs) with no ext
 The [verification monitor](co-simulation/play_monitor.rs) checks the roll count and command at every tick. It compares all seven measured currents with the expected pip pattern for each of the six faces, then checks that the display blanks. The output directory contains the Run42 JSON verdicts, CSV and SVG traces, and the Doc42 report `DICE-VR-002.pdf`.
 
 The controller runs as a Wasm guest with a deterministic face sequence. Random face selection, a flashable ATtiny1616 build, battery life, and bench validation are follow-on work.
+
+## Compare the MCU emulators
+
+The STM32F407 bench uses a 3.3 V supply and seven 560 Ω LED resistors. The Rust ELF
+uses the MCU’s SysTick and GPIO registers. Run42 sends the circuit’s button level
+to PA0 and drives the Modelica LED branches with PD0 through PD6.
+
+Build the LabWired and Renode firmware helpers from Run42, set `RUN42_ELF_HOST`
+and `RUN42_RENODE_HOST` to the executables, and set `RUN42_RENODE` to the Renode
+1.17 executable. The comparison also needs Python 3 and the Rust
+`thumbv7em-none-eabihf` target.
+
+```powershell
+rustup target add thumbv7em-none-eabihf
+./scripts/compare-elf.ps1 -StdlibPath <expanded-stdlib> -DomainLibraryPath <domain-library-model> -LabWiredSystem <nucleo-f407.yaml>
+```
+
+This command builds one ELF and runs the case against both hosts. It checks the
+seven physical LED currents against the schematic’s pip map at every sampled
+millisecond and compares face-transition times within one sample. The firmware
+must report exactly 250 SysTick milliseconds from its last accepted roll to
+blanking. The verdicts and traces are
+written under `generated/elf-comparison-*`.

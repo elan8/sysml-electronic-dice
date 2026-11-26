@@ -1,26 +1,19 @@
 //! Device-independent controller for the dice co-simulation guest.
 #![no_std]
 
+mod dice_logic;
 mod play_monitor;
 
 use play_monitor::PlayMonitor;
 
 const SAMPLE_PERIOD_NS: i64 = 1_000_000;
-const DEBOUNCE_NS: i64 = 10_000_000;
-const DISPLAY_TIMEOUT_NS: i64 = 250_000_000;
 
 struct Controller {
     clock: i64,
     next_sample: i64,
     button_voltage: f64,
     rail_voltage: f64,
-    raw_pressed: bool,
-    stable_pressed: bool,
-    raw_since: i64,
-    contact_edges: u32,
-    accepted_rolls: u32,
-    last_roll_time: i64,
-    face: u8,
+    dice: dice_logic::Dice,
     face_command: u8,
     monitor: PlayMonitor,
 }
@@ -32,13 +25,7 @@ impl Controller {
             next_sample: SAMPLE_PERIOD_NS,
             button_voltage: 0.0,
             rail_voltage: 0.0,
-            raw_pressed: false,
-            stable_pressed: false,
-            raw_since: 0,
-            contact_edges: 0,
-            accepted_rolls: 0,
-            last_roll_time: 0,
-            face: 0,
+            dice: dice_logic::Dice::new(),
             face_command: 0,
             monitor: PlayMonitor::new(),
         }
@@ -51,29 +38,11 @@ impl Controller {
         } else if self.button_voltage >= 0.7 * self.rail_voltage {
             false
         } else {
-            self.raw_pressed
+            self.dice.raw_pressed
         };
-
-        if pressed != self.raw_pressed {
-            self.raw_pressed = pressed;
-            self.raw_since = self.clock;
-            self.contact_edges += 1;
-        }
-
-        if self.raw_pressed != self.stable_pressed && self.clock - self.raw_since >= DEBOUNCE_NS {
-            self.stable_pressed = self.raw_pressed;
-            if self.stable_pressed {
-                self.accepted_rolls += 1;
-                self.last_roll_time = self.clock;
-                self.face = self.face % 6 + 1;
-            }
-        }
-
-        self.face_command = if self.clock - self.last_roll_time < DISPLAY_TIMEOUT_NS {
-            self.face
-        } else {
-            0
-        };
+        self.face_command = self
+            .dice
+            .sample((self.clock / SAMPLE_PERIOD_NS) as u32, pressed);
     }
 }
 
@@ -137,7 +106,7 @@ pub extern "C" fn advance(target: i64) -> i32 {
             state.sample_button();
             state
                 .monitor
-                .sample(state.clock, state.accepted_rolls, state.face_command);
+                .sample(state.clock, state.dice.rolls, state.face_command);
             state.next_sample += SAMPLE_PERIOD_NS;
         }
         0
@@ -153,8 +122,8 @@ pub extern "C" fn receive(_: i32) -> i32 {
 pub extern "C" fn sample(index: i32) -> f64 {
     with_state(|state| match index {
         0 => f64::from(state.face_command),
-        1 => f64::from(state.accepted_rolls),
-        2 => f64::from(state.contact_edges),
+        1 => f64::from(state.dice.rolls),
+        2 => f64::from(state.dice.contact_edges),
         3 => state.monitor.blank_time as f64 / 1e9,
         4 => f64::from(state.monitor.sequence_errors),
         5 => f64::from(state.monitor.pattern_errors),
